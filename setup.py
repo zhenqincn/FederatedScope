@@ -53,8 +53,9 @@ llm_requires = [
     'tokenizers==0.13.3',
     'transformers==4.29.2',
     'accelerate==0.20.3',
-    'peft==0.3.0',
+    'peft==0.4.0',  # required by QLoRA: prepare_model_for_kbit_training
     'sentencepiece==0.1.99',
+    'bitsandbytes==0.41.1'
 ]
 
 benchmark_hpo_requires = [

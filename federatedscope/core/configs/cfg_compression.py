@@ -22,10 +22,10 @@ def extend_compression_cfg(cfg):
 
 def assert_compression_cfg(cfg):
 
-    if cfg.quantization.method.lower() not in ['none', 'uniform']:
+    if cfg.quantization.method.lower() not in ['none', 'uniform', 'qlora']:
         logger.warning(
             f'Quantization method is expected to be one of ["none",'
-            f'"uniform"], but got "{cfg.quantization.method}". So we '
+            f'"uniform", "qlora"], but got "{cfg.quantization.method}". So we '
             f'change it to "none"')
 
     if cfg.quantization.method.lower(

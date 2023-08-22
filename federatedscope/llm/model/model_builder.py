@@ -1,4 +1,7 @@
 from federatedscope.llm.model.adapter_builder import AdapterModel
+from transformers import BitsAndBytesConfig
+import torch
+from peft import prepare_model_for_kbit_training
 
 
 def get_model_from_huggingface(model_name, config):
@@ -7,8 +10,48 @@ def get_model_from_huggingface(model_name, config):
     kwargs = {}
     if len(config.llm.cache.model):
         kwargs['cache_dir'] = config.llm.cache.model
-
-    return AutoModelForCausalLM.from_pretrained(model_name, **kwargs)
+    if config.quantization.method == 'qlora':
+        # The implementation of QLoRA is adapted from https://github.com/artidoro/qlora
+        # kwargs['load_in_4bit'] = True
+        # kwargs['load_in_8bit'] = False
+        # kwargs['quantization_config'] = BitsAndBytesConfig(
+        #     load_in_4bit=True,
+        #     load_in_8bit=False,
+        #     llm_int8_threshold=6.0,
+        #     llm_int8_has_fp16_weight=False,
+        #     # bnb_4bit_compute_dtype=torch.bfloat16,
+        #     bnb_4bit_compute_dtype=torch.float32,
+        #     bnb_4bit_use_double_quant=True,
+        #     bnb_4bit_quant_type='nf4'
+        # )
+        # kwargs['device_map'] = config.device
+        # kwargs['torch_dtype'] = torch.float32
+        # kwargs['trust_remote_code'] = False
+        # kwargs['use_auth_token'] = False
+        # print('\n\n\n\n\n\n\n\n\n\n\n LLM Model Loaded with K-bit quant \n\n\n\n\n\n\n\n\n\n\n ')
+        model = AutoModelForCausalLM.from_pretrained(
+            model_name, 
+            load_in_4bit=True, 
+            load_in_8bit=False,
+            device_map=config.device,
+            quantization_config=BitsAndBytesConfig(
+                load_in_4bit=True,
+                load_in_8bit=False,
+                llm_int8_threshold=6.0,
+                llm_int8_has_fp16_weight=False,
+                # bnb_4bit_compute_dtype=torch.bfloat16,
+                bnb_4bit_compute_dtype=torch.bfloat16,
+                bnb_4bit_use_double_quant=True,
+                bnb_4bit_quant_type='nf4'
+            ),
+            torch_dtype=torch.bfloat16,
+            trust_remote_code=False,
+            use_auth_token=False
+            # cache_dir=config.llm.cache.model if len(config.llm.cache.model) else None 
+        )
+        return prepare_model_for_kbit_training(model, use_gradient_checkpointing=True)
+    else:
+        return AutoModelForCausalLM.from_pretrained(model_name, **kwargs)
 
 
 def get_model_from_modelscope(model_name, config):
