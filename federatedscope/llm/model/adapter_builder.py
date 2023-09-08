@@ -174,6 +174,7 @@ class AdapterModel(nn.Module):
             adapter_package = kwargs.pop('adapter_package', 'peft')
             adapter_method = kwargs.pop('adapter_method', 'lora')
 
+            print(args)
             self.model = enable_adapter(model, adapter_package, adapter_method,
                                         **kwargs)
         else:
