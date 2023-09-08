@@ -33,7 +33,7 @@ class GeneralTorchTrainer(Trainer):
         else:
             return self._param_filter(
                 self.ctx.model.state_dict() if self.cfg.federate.
-                share_local_model else self.ctx.model.cpu().state_dict())
+                share_local_model else self.ctx.model.state_dict())
 
     def setup_data(self, ctx):
         """
@@ -467,4 +467,5 @@ class GeneralTorchTrainer(Trainer):
             if torch is None:
                 pass
             else:
-                self.ctx.model.to(torch.device("cpu"))
+                pass
+                # self.ctx.model.to(torch.device("cpu"))
