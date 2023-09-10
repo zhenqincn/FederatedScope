@@ -244,9 +244,6 @@ class Trainer(BaseTrainer):
         hooks_set = hooks_set or self.hooks_in_eval
 
         if self.ctx.check_split(target_data_split_name, skip=True):
-            if self.ctx.cfg.quantization.method == 'qlora':
-                from peft import prepare_model_for_kbit_training
-                self.ctx.model = prepare_model_for_kbit_training(self.ctx.model, use_gradient_checkpointing=True)
             self._run_routine(MODE.TEST, hooks_set, target_data_split_name)
         else:
             self.ctx.eval_metrics = dict()

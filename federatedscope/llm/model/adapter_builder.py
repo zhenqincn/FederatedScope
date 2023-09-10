@@ -53,13 +53,13 @@ def enable_adapter(model, package, adapter, **kwargs):
             model = get_peft_model(model, peft_config)
             for name, module in model.named_modules():
                 if isinstance(module, LoraLayer):
-                    module = module.to(torch.bfloat16)
+                    module = module.to(torch.float16)
                 if 'norm' in name:
                     module = module.to(torch.float32)
                 if 'lm_head' in name or 'embed_tokens' in name:
                     if hasattr(module, 'weight'):
                         if module.weight.dtype == torch.float32:
-                            module = module.to(torch.bfloat16)
+                            module = module.to(torch.float16)
         elif adapter == 'prefix':
             from peft import PrefixTuningConfig
             peft_config = PrefixTuningConfig(task_type=TaskType.CAUSAL_LM,
