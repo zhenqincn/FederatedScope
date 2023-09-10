@@ -46,7 +46,7 @@ def get_model_from_huggingface(model_name, config):
             ),
             torch_dtype=torch.bfloat16,
             trust_remote_code=False,
-            use_auth_token=False
+            # use_auth_token=False
             # cache_dir=config.llm.cache.model if len(config.llm.cache.model) else None 
         )
         return prepare_model_for_kbit_training(model, use_gradient_checkpointing=True)

@@ -44,21 +44,22 @@ def enable_adapter(model, package, adapter, **kwargs):
                 bias="none",
                 task_type=TaskType.CAUSAL_LM,
             )
+            # print(find_all_linear_names(bits=4, model=model))
             # without the following line, an error with
             # `element 0 of tensors does not require grad and does not have a grad_fn`
             # would be caused
             # @https://github.com/huggingface/peft/issues/137
             model.enable_input_require_grads()
             model = get_peft_model(model, peft_config)
-            # for name, module in model.named_modules():
-            #     if isinstance(module, LoraLayer):
-            #         module = module.to(torch.bfloat16)
-            #     if 'norm' in name:
-            #         module = module.to(torch.float32)
-            #     if 'lm_head' in name or 'embed_tokens' in name:
-            #         if hasattr(module, 'weight'):
-            #             if module.weight.dtype == torch.float32:
-            #                 module = module.to(torch.bfloat16)
+            for name, module in model.named_modules():
+                if isinstance(module, LoraLayer):
+                    module = module.to(torch.bfloat16)
+                if 'norm' in name:
+                    module = module.to(torch.float32)
+                if 'lm_head' in name or 'embed_tokens' in name:
+                    if hasattr(module, 'weight'):
+                        if module.weight.dtype == torch.float32:
+                            module = module.to(torch.bfloat16)
         elif adapter == 'prefix':
             from peft import PrefixTuningConfig
             peft_config = PrefixTuningConfig(task_type=TaskType.CAUSAL_LM,
