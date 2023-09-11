@@ -4,7 +4,7 @@ early_stop:
   patience: 0
 federate:
   mode: standalone
-  client_num: 2
+  client_num: 10
   total_round_num: 500
   save_to: "llama.ckpt"
   share_local_model: True
@@ -30,7 +30,7 @@ train:
   local_update_steps: 30
   batch_or_epoch: batch
   optimizer:
-    type: SGD
+    type: bit.SGD
     lr: 0.0003
     weight_decay: 0.0005
     momentum: 0.9
